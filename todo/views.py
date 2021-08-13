@@ -10,6 +10,8 @@ def home(request):
 
 def signupuser(request):
   if request.method == 'POST':
+    # TODO form validation
+
     # Validate password
     if request.POST['password1'] != request.POST['password2']:
       error = 'Password confirmation must match password!'
@@ -54,6 +56,8 @@ def signupuser(request):
 
 def loginuser(request):
   if request.method == 'POST':
+    # TODO form validation
+    
     # Validate username & password
     user = authenticate(
       request,
