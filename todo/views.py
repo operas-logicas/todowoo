@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from .forms import TodoForm
+from .models import Todo
 
 User = get_user_model()
 
@@ -11,6 +12,9 @@ def home(request):
   return render(request, 'todo/home.html')
 
 def signupuser(request):
+  if request.user.is_authenticated:
+    return redirect('home')
+
   if request.method == 'POST':
     # Validate password
     if request.POST['password1'] != request.POST['password2']:
@@ -55,6 +59,9 @@ def signupuser(request):
     )
 
 def loginuser(request):
+  if request.user.is_authenticated:
+    return redirect('home')
+
   if request.method == 'POST':    
     # Validate username & password
     user = authenticate(
@@ -124,7 +131,13 @@ def createtodo(request):
     )
 
 def currenttodos(request):
+  if not request.user.is_authenticated:
+    return redirect('loginuser')
+
+  todos = Todo.objects.filter(user=request.user, completed__isnull=True)
+
   return render(
     request,
-    'todo/current.html'
+    'todo/current.html',
+    { 'todos': todos }
   )
