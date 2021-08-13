@@ -1,8 +1,10 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
+from .forms import TodoForm
+
+User = get_user_model()
 
 # Create your views here.
 def home(request):
@@ -10,8 +12,6 @@ def home(request):
 
 def signupuser(request):
   if request.method == 'POST':
-    # TODO form validation
-
     # Validate password
     if request.POST['password1'] != request.POST['password2']:
       error = 'Password confirmation must match password!'
@@ -55,9 +55,7 @@ def signupuser(request):
     )
 
 def loginuser(request):
-  if request.method == 'POST':
-    # TODO form validation
-    
+  if request.method == 'POST':    
     # Validate username & password
     user = authenticate(
       request,
@@ -93,6 +91,37 @@ def logoutuser(request):
     logout(request)
     return redirect('home')
   else: return redirect('home')
+
+def createtodo(request):
+  if not request.user.is_authenticated:
+    return redirect('loginuser')
+
+  if request.method == 'POST':
+    form = TodoForm(request.POST)
+
+    if form.is_valid():
+      todo = form.save(commit=False)
+      todo.user = request.user
+      todo.save()
+
+      return redirect('currenttodos')
+
+    else:
+      error = 'Invalid data!'
+
+      return render(
+        request,
+        'todo/create.html',
+        { 'form': TodoForm, 'error': error }
+      )
+    
+  else:
+    # GET request so return create todo form
+    return render(
+      request,
+      'todo/create.html',
+      { 'form': TodoForm() }
+    )
 
 def currenttodos(request):
   return render(
