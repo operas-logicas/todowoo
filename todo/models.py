@@ -11,4 +11,4 @@ class Todo(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
   def __str__(self):
-    return self.title + ' - ' + str(self.created.strftime('%Y-%m-%d %H:%M')) + ' (' + str(self.user) + ')'
+    return self.title + ' - ' + str(self.created.strftime('%b. %d, %Y, %I:%M %p')).lower().capitalize() + ' (' + str(self.user) + ')'

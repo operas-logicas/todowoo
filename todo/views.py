@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db import IntegrityError
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from .forms import TodoForm
 from .models import Todo
 
@@ -141,3 +142,48 @@ def currenttodos(request):
     'todo/current.html',
     { 'todos': todos }
   )
+
+def viewtodo(request, todo_pk):
+  if not request.user.is_authenticated:
+    return redirect('loginuser')
+
+  todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
+
+  if request.method == 'POST':
+    updatedForm = TodoForm(request.POST, instance=todo)
+
+    if updatedForm.is_valid():
+      updatedForm.save()
+      return redirect('currenttodos')
+
+    else:
+      form = TodoForm(instance=todo)
+      error = 'Invalid data!'
+
+      return render(
+        request,
+        'todo/todo.html',
+        { 'todo': todo, 'form': form, 'error': error }
+      )
+
+  else:
+    # GET request so return todo
+    form = TodoForm(instance=todo)
+
+    return render(
+      request,
+      'todo/todo.html',
+      { 'todo': todo, 'form': form }
+    )
+
+def completetodo(request, todo_pk):
+  if not request.user.is_authenticated:
+    return redirect('loginuser')
+
+  todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
+
+  if request.method == 'POST':
+    todo.completed = timezone.now()
+    todo.save()
+    return redirect('currenttodos')
+  else: return redirect('home')
