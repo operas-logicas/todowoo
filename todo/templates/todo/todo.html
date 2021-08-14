@@ -21,4 +21,9 @@
   <button type="submit">Complete</button>
 </form>
 
+<form action="{% url 'deletetodo' todo.id %}" method="POST">
+  {% csrf_token %}
+  <button type="submit">Delete</button>
+</form>
+
 {% endblock %}
