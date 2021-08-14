@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
@@ -94,16 +95,15 @@ def loginuser(request):
       { 'form': AuthenticationForm() }
     )
 
+@login_required
 def logoutuser(request):
   if request.method == 'POST':
     logout(request)
     return redirect('home')
   else: return redirect('home')
 
+@login_required
 def createtodo(request):
-  if not request.user.is_authenticated:
-    return redirect('loginuser')
-
   if request.method == 'POST':
     form = TodoForm(request.POST)
 
@@ -131,10 +131,8 @@ def createtodo(request):
       { 'form': TodoForm() }
     )
 
+@login_required
 def currenttodos(request):
-  if not request.user.is_authenticated:
-    return redirect('loginuser')
-
   todos = Todo.objects.filter(user=request.user, completed__isnull=True)
 
   return render(
@@ -143,10 +141,20 @@ def currenttodos(request):
     { 'todos': todos }
   )
 
-def viewtodo(request, todo_pk):
-  if not request.user.is_authenticated:
-    return redirect('loginuser')
+@login_required
+def completedtodos(request):
+  todos = Todo.objects.filter(
+    user=request.user, completed__isnull=False
+  ).order_by('-completed')
 
+  return render(
+    request,
+    'todo/completed.html',
+    { 'todos': todos }
+  )
+
+@login_required
+def viewtodo(request, todo_pk):
   todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
 
   if request.method == 'POST':
@@ -154,7 +162,10 @@ def viewtodo(request, todo_pk):
 
     if updatedForm.is_valid():
       updatedForm.save()
-      return redirect('currenttodos')
+      if todo.completed:
+        return redirect('completedtodos')
+      else:
+        return redirect('currenttodos')
 
     else:
       form = TodoForm(instance=todo)
@@ -176,10 +187,8 @@ def viewtodo(request, todo_pk):
       { 'todo': todo, 'form': form }
     )
 
+@login_required
 def completetodo(request, todo_pk):
-  if not request.user.is_authenticated:
-    return redirect('loginuser')
-
   todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
 
   if request.method == 'POST':
@@ -188,13 +197,21 @@ def completetodo(request, todo_pk):
     return redirect('currenttodos')
   else: return redirect('home')
 
+@login_required
 def deletetodo(request, todo_pk):
-  if not request.user.is_authenticated:
-    return redirect('loginuser')
-
   todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
 
   if request.method == 'POST':
     todo.delete()
+    return redirect('currenttodos')
+  else: return redirect('home')
+
+@login_required
+def redotodo(request, todo_pk):
+  todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
+
+  if request.method == 'POST':
+    todo.completed = None
+    todo.save()
     return redirect('currenttodos')
   else: return redirect('home')

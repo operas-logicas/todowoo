@@ -29,8 +29,10 @@ urlpatterns = [
     # App - Todo
     path('', views.home, name='home'),
     path('create/', views.createtodo, name='createtodo'),
-    path('current/', views.currenttodos, name='currenttodos'),
+    path('todos/', views.currenttodos, name='currenttodos'),
+    path('todos/completed/', views.completedtodos, name='completedtodos'),
     path('todos/<int:todo_pk>/', views.viewtodo, name='viewtodo'),
     path('todos/<int:todo_pk>/complete/', views.completetodo, name='completetodo'),
     path('todos/<int:todo_pk>/delete/', views.deletetodo, name='deletetodo'),
+    path('todos/<int:todo_pk>/redo/', views.redotodo, name='redotodo'),
 ]

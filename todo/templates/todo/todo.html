@@ -10,16 +10,22 @@
 
 <form method="POST">
   {% csrf_token %}
-  
   {{ form.as_p }}
-
   <button type="submit">Save</button>
 </form>
 
-<form action="{% url 'completetodo' todo.id %}" method="POST">
-  {% csrf_token %}
-  <button type="submit">Complete</button>
-</form>
+{% if todo.completed %}
+  <form action="{% url 'redotodo' todo.id %}" method="POST">
+    {% csrf_token %}
+    <button type="submit">Undo Complete</button>
+  </form>
+{% else %}
+  <form action="{% url 'completetodo' todo.id %}" method="POST">
+    {% csrf_token %}
+    <button type="submit">Complete</button>
+  </form>
+{% endif %}
+
 
 <form action="{% url 'deletetodo' todo.id %}" method="POST">
   {% csrf_token %}

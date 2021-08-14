@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Current</h1>
+<h1>Completed</h1>
 
 <ul>
   {% for todo in todos %}
@@ -21,6 +21,8 @@
         {% if todo.memo %}
           - {{ todo.memo }}
         {% endif %}
+
+        - {{ todo.completed|date:'M. j, Y, h:i a'}}
       </li>
     </a>
   {% endfor %}
