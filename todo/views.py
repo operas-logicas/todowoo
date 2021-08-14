@@ -85,7 +85,10 @@ def loginuser(request):
     else:
       # Success!
       login(request, user)
-      return redirect('currenttodos')
+      if request.GET['next']:
+        next = request.GET['next']
+        return redirect(next)
+      else: return redirect('currenttodos')
 
   else:
     # GET request so return login form
