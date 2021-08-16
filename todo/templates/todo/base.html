@@ -60,7 +60,7 @@
                   <button id="signOutBtn" type="submit">Logout</button>
                 </form>                
               </li>
-              
+
             {% else %}
               <li class="nav-item {% if request.path == '/signup/' %}active{% endif %}">
                 <a class="nav-link" href="{% url 'signupuser' %}">Sign Up</a>
@@ -76,8 +76,10 @@
       </div>
     </nav>
 
-    {% block content %}
-    {% endblock %}
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
 
     <!-- Optional JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

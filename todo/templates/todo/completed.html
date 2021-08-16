@@ -2,30 +2,37 @@
 
 {% block content %}
 
-<h1>Completed</h1>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-10">
+    {% if todos %}
+      <h1>{{ todos.count }} Completed Todo{{ todos.count|pluralize }}</h1>
+    {% else %}
+      <h1>Completed Todos</h1>
+    {% endif %}
+  </div>
+</div>
 
-<ul>
-  {% for todo in todos %}
-    <a href="{% url 'viewtodo' todo.id %}">
-      <li>
-        {% if todo.important %}
-          <b>
-        {% endif %}
-        
-        {{ todo.title }}
-        
-        {% if todo.important %}
-          </b>
-        {% endif %}
-        
-        {% if todo.memo %}
-          - {{ todo.memo }}
-        {% endif %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-10">
+    {% if todos %}
+      <div class="list-group">
+        {% for todo in todos %}
+          <a href="{% url 'viewtodo' todo.id %}" class="list-group-item list-group-item-action {% if todo.important %}list-group-item-danger{% endif %}">
+            <b>{{ todo.title }}</b>
+             - Completed {{ todo.completed|date:'M j Y g:i A' }}
+          </a>
+        {% endfor %}
+      </div>
 
-        - {{ todo.completed|date:'M. j, Y, h:i a'}}
-      </li>
-    </a>
-  {% endfor %}
-</ul>
+    {% else %}
+      <div class="text-center">
+        <h2>No completed todos. Looks like you've got work to do!</h2>
+        
+        <a role="button" class="btn btn-primary mt-4" href="{% url 'currenttodos' %}">Current Todos</a>
+      </div>
+      
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}
