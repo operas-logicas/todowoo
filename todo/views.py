@@ -62,24 +62,21 @@ def loginuser(request):
     # Validate username & password
     user = authenticate(
       request,
-      username = request.POST['username'],
-      password = request.POST['password']
+      username=request.POST['username'],
+      password=request.POST['password']
     )
 
     # Invalid username and/or password
     if user is None or not user.is_active:
-      error = 'Invalid username and password!'
-
-      return render(
-        request,
-        'todo/login.html',
-        { 'form': AuthenticationForm(), 'error': error }
-      )
+      messages.error(request, 'Invalid username and/or password!')
+      return redirect('loginuser')
     
     else:
       # Success!
       login(request, user)
+
       if request.GET.get('next', False):
+        # If need to redirect to 'next' url param
         next = request.GET['next']
         return redirect(next)
       else: return redirect('currenttodos')
