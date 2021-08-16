@@ -2,16 +2,59 @@
 
 {% block content %}
 
-<h1>Sign Up</h1>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <h2>Sign Up</h2>
+  </div>
+</div>
 
-{% if error %}
-  <h2>{{ error }}</h2>
-{% endif %}
+<div class="row justify-content-center mt-5">
+  <div class="col-m-6">
+    {% if messages %}
+      <div role="alert" class="alert alert-danger">
+        <h5>Uh oh! You made some errors.</h3>
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Sign Up</button>
-</form>
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input aria-describedby="usernameHelp" type="text" name="username" id="username" class="form-control" value="{% if user.username %}{{ user.username }}{% endif %}">
+        <small id="usernameHelp" class="form-text text-muted">Your username must be unique. We'll let you know if someone has taken it already.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="password1">Password</label>
+        <input aria-describedby="passwordHelp" type="password" name="password1" id="password1" class="form-control" value="{% if user.password1 %}{{ user.password1 }}{% endif %}">
+        <small id="passwordHelp" class="form-text text-muted">
+          <ul>
+            <li>Your password can’t be too similar to your other personal information.</li>
+            <li>Your password must contain at least 8 characters.</li>
+            <li>Your password can’t be a commonly used password.</li>
+            <li>Your password can’t be entirely numeric.</li>
+          </ul>
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="password2">Confirm Password</label>
+        <input type="password" name="password2" id="password2" class="form-control" value="{% if user.password2 %}{{ user.password2 }}{% endif %}">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+
+    <hr>
+
+    <div class="text-center">
+      Already have an account? <a href="{% url 'loginuser' %}">Login</a>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
