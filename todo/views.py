@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -18,39 +19,32 @@ def signupuser(request):
     return redirect('home')
 
   if request.method == 'POST':
-    # Validate password
-    if request.POST['password1'] != request.POST['password2']:
-      error = 'Password confirmation must match password!'
+    # Validate form
+    form = UserCreationForm(request.POST)
 
+    if form.is_valid():
+      # Create new user
+      user = User.objects.create_user(
+        username=form.cleaned_data['username'],
+        password=form.cleaned_data['password1']
+      )
+
+      # Save & login new user
+      user.save()
+      login(request, user)
+
+      # Redirect to /currenttodos/
+      return redirect('currenttodos')
+
+    else:
+      # Form validation failed
+      messages.error(request, form.errors.as_ul())
+      
       return render(
         request,
         'todo/signup.html',
-        { 'form': UserCreationForm(), 'error': error }
+        { 'form': UserCreationForm(), 'user': request.POST }
       )
-
-    # Try creating new user
-    else:
-      try:
-        user = User.objects.create_user(
-          username = request.POST['username'],
-          password = request.POST['password1']
-        )
-
-        # Save & login new user
-        user.save()
-        login(request, user)
-
-        # Redirect to /currenttodos/
-        return redirect('currenttodos')
-
-      except IntegrityError:
-        error = 'Username already taken! Please choose a new username.'
-
-        return render(
-          request,
-          'todo/signup.html',
-          { 'form': UserCreationForm(), 'error': error }
-        )
 
   else:
     # GET request so return sign up form
