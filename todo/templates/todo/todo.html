@@ -2,34 +2,71 @@
 
 {% block content %}
 
-<h1>{{ todo.title }}</h1>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <h1>Edit Todo</h1>
+  </div>
+</div>
 
-{% if error %}
-  <h2>{{ error }}</h2>
-{% endif %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    {% if messages %}
+      <div role="alert" class="alert alert-danger">
+        <h5>Uh oh! You made some errors.</h3>
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save</button>
-</form>
+    <!-- Edit Todo Form -->
+    <form method="POST">
+      {% csrf_token %}
 
-{% if todo.completed %}
-  <form action="{% url 'redotodo' todo.id %}" method="POST">
-    {% csrf_token %}
-    <button type="submit">Undo Complete</button>
-  </form>
-{% else %}
-  <form action="{% url 'completetodo' todo.id %}" method="POST">
-    {% csrf_token %}
-    <button type="submit">Complete</button>
-  </form>
-{% endif %}
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" class="form-control" value="{{ todo.title }}">
+      </div>
 
+      <div class="form-group">
+        <label for="memo">Memo</label>
+        <textarea name="memo" id="memo" rows="5" class="form-control">{{ todo.memo }}</textarea>
+      </div>
 
-<form action="{% url 'deletetodo' todo.id %}" method="POST">
-  {% csrf_token %}
-  <button type="submit">Delete</button>
-</form>
+      <div class="form-group form-check">
+        <input type="checkbox" name="important" id="important" class="form-check-input" {% if todo.important %}checked{% endif %}>
+        <label for="important" class="form-check-label">Important</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save</button>
+      
+      {% if todo.completed %}
+        <button type="button" class="btn btn-warning" onclick="$('#redoTodoBtn').click()">Undo Complete</button>
+      {% else %}
+        <button type="button" class="btn btn-success" onclick="$('#completeTodoBtn').click()">Complete</button>
+      {% endif %}
+
+      <button type="button" class="btn btn-danger" onclick="$('#deleteTodoBtn').click()">Delete</button>
+    </form>
+
+    <!-- Hidden forms for 'Undo Complete' / 'Complete' and 'Delete' -->
+    {% if todo.completed %}
+      <form style="display: none" action="{% url 'redotodo' todo.id %}" method="POST">
+        {% csrf_token %}
+        <button id="redoTodoBtn" type="submit">Undo Complete</button>
+      </form>
+    {% else %}
+      <form style="display: none" action="{% url 'completetodo' todo.id %}" method="POST">
+        {% csrf_token %}
+        <button id="completeTodoBtn" type="submit">Complete</button>
+      </form>
+    {% endif %}
+
+    <form style="display: none" action="{% url 'deletetodo' todo.id %}" method="POST">
+      {% csrf_token %}
+      <button id="deleteTodoBtn" type="submit">Delete</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}

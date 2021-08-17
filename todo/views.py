@@ -154,6 +154,7 @@ def viewtodo(request, todo_pk):
   if request.method == 'POST':
     updatedForm = TodoForm(request.POST, instance=todo)
 
+    # Validate form
     if updatedForm.is_valid():
       updatedForm.save()
       if todo.completed:
@@ -162,14 +163,9 @@ def viewtodo(request, todo_pk):
         return redirect('currenttodos')
 
     else:
-      form = TodoForm(instance=todo)
-      error = 'Invalid data!'
-
-      return render(
-        request,
-        'todo/todo.html',
-        { 'todo': todo, 'form': form, 'error': error }
-      )
+      # Form validation failed
+      messages.error(request, updatedForm.errors.as_ul())
+      return redirect('viewtodo', todo_pk)
 
   else:
     # GET request so return todo
