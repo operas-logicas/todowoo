@@ -101,6 +101,7 @@ def createtodo(request):
   if request.method == 'POST':
     form = TodoForm(request.POST)
 
+    # Validate form
     if form.is_valid():
       todo = form.save(commit=False)
       todo.user = request.user
@@ -109,12 +110,13 @@ def createtodo(request):
       return redirect('currenttodos')
 
     else:
-      error = 'Invalid data!'
+      # Form validation failed
+      messages.error(request, form.errors.as_ul())
 
       return render(
         request,
         'todo/create.html',
-        { 'form': TodoForm, 'error': error }
+        { 'form': TodoForm, 'todo': request.POST }
       )
     
   else:

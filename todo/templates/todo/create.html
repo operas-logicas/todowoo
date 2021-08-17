@@ -2,18 +2,45 @@
 
 {% block content %}
 
-<h1>Create</h1>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <h1>New Todo</h1>
+  </div>
+</div>
 
-{% if error %}
-  <h2>{{ error }}</h2>
-{% endif %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    {% if messages %}
+      <div role="alert" class="alert alert-danger">
+        <h5>Uh oh! You made some errors.</h3>
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-<form method="POST">
-  {% csrf_token %}
+    <!-- Edit Todo Form -->
+    <form method="POST">
+      {% csrf_token %}
 
-  {{ form.as_p }}
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" class="form-control" value="{% if todo.title %}{{ todo.title }}{% endif %}">
+      </div>
 
-  <button type="submit">Create</button>
-</form>
+      <div class="form-group">
+        <label for="memo">Memo</label>
+        <textarea name="memo" id="memo" rows="5" class="form-control">{% if todo.memo %}{{ todo.memo }}{% endif %}</textarea>
+      </div>
+
+      <div class="form-group form-check">
+        <input type="checkbox" name="important" id="important" class="form-check-input" {% if todo.important %}checked{% endif %}>
+        <label for="important" class="form-check-label">Important</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}
