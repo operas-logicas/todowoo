@@ -8,5 +8,9 @@ urlpatterns = [
   path('todos/<int:pk>/', views.TodoDetail.as_view()),
   path('todos/<int:pk>/complete', views.TodoComplete.as_view()),
   path('todos/<int:pk>/redo', views.TodoRedo.as_view()),
-  path('todos/completed/', views.TodoCompletedList.as_view()),
+  path('todos/completed', views.TodoCompletedList.as_view()),
+
+  # Auth
+  path('login', views.login),
+  path('signup', views.signup),
 ]
